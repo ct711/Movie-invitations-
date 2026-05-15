@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invite Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0c0a;
+      --surface: #1a1712;
+      --border: #2e2a24;
+      --gold: #c9913a;
+      --gold-light: #e8b86d;
+      --cream: #f0e6d3;
+      --muted: #6b6357;
+      --red: #c8392b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--cream);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .header .eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 6vw, 40px);
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--cream);
+    }
+
+    .header h1 em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .header p {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--cream);
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      padding: 14px 16px;
+      border-radius: 4px;
+      outline: none;
+      transition: border-color 0.2s;
+      appearance: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--gold);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: var(--muted);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.6;
+    }
+
+    select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23c9913a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+
+    .generate-btn {
+      width: 100%;
+      background: var(--gold);
+      color: var(--bg);
+      border: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .generate-btn:hover { background: var(--gold-light); }
+    .generate-btn:active { transform: scale(0.98); }
+
+    .result {
+      margin-top: 32px;
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      display: none;
+    }
+
+    .result.visible { display: block; animation: fadeUp 0.4s ease both; }
+
+    .result-label {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .result-url {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--muted);
+      word-break: break-all;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .copy-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover { background: var(--gold); color: var(--bg); }
+    .copy-btn.copied { background: #2a4a2a; border-color: #4a8a4a; color: #7ac97a; }
+
+    .preview-link {
+      display: block;
+      text-align: center;
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+    }
+    .preview-link:hover { color: var(--cream); }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 48px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="eyebrow">✦ Watch Together ✦</div>
+      <h1>Build your <em>invitation</em></h1>
+      <p>Fill in the details. Get a link. Send it.<br/>No app required. No excuses accepted.</p>
+    </div>
+
+    <div class="form-group">
+      <label>Their Name</label>
+      <input type="text" id="toName" placeholder="小红, Sarah, 你懂的那个人…" />
+    </div>
+
+    <div class="form-group">
+      <label>Show / Movie Title</label>
+      <input type="text" id="title" placeholder="爱情公寓, Crazy Rich Asians…" />
+    </div>
+
+    <div class="form-group">
+      <label>Your Tagline <span style="color:var(--muted);font-size:10px;">(or leave blank for default)</span></label>
+      <textarea id="tagline" placeholder="Two idiots. One movie. Zero planning skills."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>When</label>
+      <input type="text" id="time" placeholder="Friday 8pm · 周五晚上八点" />
+    </div>
+
+    <div class="form-group">
+      <label>Where / Platform</label>
+      <input type="text" id="platform" placeholder="Netflix · 你家沙发 · My place" />
+    </div>
+
+    <div class="form-group">
+      <label>Your Name (the sender)</label>
+      <input type="text" id="fromName" placeholder="你自己" />
+    </div>
+
+    <hr class="divider" />
+
+    <button class="generate-btn" onclick="generateLink()">
+      ✦ Generate Invite Link
+    </button>
+
+    <div class="result" id="result">
+      <div class="result-label">Your invite link</div>
+      <div class="result-url" id="resultUrl"></div>
+      <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy Link</button>
+      <a class="preview-link" id="previewLink" target="_blank">→ Preview what they'll see</a>
+    </div>
+
+    <div class="footer-note">
+      Powered by zero algorithms &amp; one questionable movie taste.<br/>
+      Links work forever. No sign-up. No tracking.
+    </div>
+  </div>
+
+  <script>
+    let generatedUrl = '';
+
+    function generateLink() {
+      const to = document.getElementById('toName').value.trim();
+      const title = document.getElementById('title').value.trim();
+      const tagline = document.getElementById('tagline').value.trim();
+      const time = document.getElementById('time').value.trim();
+      const platform = document.getElementById('platform').value.trim();
+      const from = document.getElementById('fromName').value.trim();
+
+      if (!to || !title) {
+        alert('At least fill in their name and the show/movie title!');
+        return;
+      }
+
+      const params = new URLSearchParams();
+      if (to) params.set('to', to);
+      if (title) params.set('title', title);
+      if (tagline) params.set('tagline', tagline);
+      if (time) params.set('time', time);
+      if (platform) params.set('platform', platform);
+      if (from) params.set('from', from);
+
+      // Build invite.html URL relative to current location
+      const base = window.location.href.replace('builder.html', 'invite.html');
+      generatedUrl = `${base}?${params.toString()}`;
+
+      document.getElementById('resultUrl').textContent = generatedUrl;
+      document.getElementById('previewLink').href = generatedUrl;
+      document.getElementById('result').classList.add('visible');
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(generatedUrl).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = '✓ Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy Link';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
