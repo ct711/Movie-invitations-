@@ -8,318 +8,471 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #0e0c0a;
-      --surface: #1a1712;
-      --border: #2e2a24;
-      --gold: #c9913a;
-      --gold-light: #e8b86d;
-      --cream: #f0e6d3;
-      --muted: #6b6357;
-      --red: #c8392b;
+      --bg: #0e0c0a; --surface: #1a1712; --border: #2e2a24;
+      --gold: #c9913a; --gold-light: #e8b86d; --cream: #f0e6d3;
+      --muted: #6b6357; --red: #c8392b; --green: #4a8a4a;
     }
+    body { background: var(--bg); color: var(--cream); font-family: 'DM Mono', monospace; min-height: 100vh; display: flex; }
 
-    body {
-      background: var(--bg);
-      color: var(--cream);
-      font-family: 'DM Mono', monospace;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-    }
+    /* FORM PANEL */
+    .form-panel { width: 100%; max-width: 520px; min-height: 100vh; padding: 48px 40px; border-right: 1px solid var(--border); overflow-y: auto; flex-shrink: 0; }
 
-    .container {
-      width: 100%;
-      max-width: 560px;
-      animation: fadeUp 0.6s ease both;
-    }
+    /* PREVIEW PANEL */
+    .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; position: sticky; top: 0; height: 100vh; overflow: hidden; }
+    .preview-label { font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; align-self: flex-start; }
+    .preview-frame { width: 100%; max-width: 380px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 24px 80px rgba(0,0,0,0.4); }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .mini-invite { padding: 28px 24px; text-align: center; transition: background 0.4s; min-height: 380px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+    .m-emoji { font-size: 26px; margin-bottom: 8px; }
+    .m-eyebrow { font-size: 8px; letter-spacing: 0.35em; text-transform: uppercase; margin-bottom: 10px; }
+    .m-greeting { font-family: 'Playfair Display', serif; font-size: 11px; margin-bottom: 4px; opacity: 0.6; }
+    .m-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; line-height: 1.15; margin-bottom: 12px; }
+    .m-title em { font-style: italic; display: block; }
+    .m-tagline { font-size: 10px; line-height: 1.9; margin-bottom: 16px; opacity: 0.65; }
+    .m-meta { display: flex; gap: 16px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+    .m-meta-item { text-align: center; }
+    .m-meta-label { font-size: 7px; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 2px; }
+    .m-meta-value { font-size: 10px; }
+    .m-btn-yes { padding: 9px 20px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; border: none; border-radius: 2px; cursor: default; display: block; width: 170px; margin: 0 auto 7px; }
+    .m-btn-no { padding: 7px 20px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; background: transparent; border-radius: 2px; cursor: default; display: block; width: 170px; margin: 0 auto; }
+    .m-from { margin-top: 14px; font-size: 9px; opacity: 0.4; }
+    .m-expired { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 22px; font-style: italic; font-weight: 700; backdrop-filter: blur(4px); background: rgba(0,0,0,0.35); color: #fff; }
 
-    .header {
-      text-align: center;
-      margin-bottom: 48px;
-    }
+    /* FORM */
+    .header { margin-bottom: 36px; }
+    .header .eyebrow { font-size: 10px; letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; }
+    .header h1 { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; line-height: 1.1; }
+    .header h1 em { font-style: italic; color: var(--gold-light); }
+    .section-title { font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    input[type="text"], input[type="datetime-local"], textarea, select { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 13px; padding: 11px 13px; border-radius: 3px; outline: none; transition: border-color 0.2s; appearance: none; }
+    input:focus, textarea:focus, select:focus { border-color: var(--gold); }
+    input::placeholder, textarea::placeholder { color: var(--muted); }
+    textarea { resize: vertical; min-height: 68px; line-height: 1.6; }
+    select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23c9913a' d='M5 7L0 2h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; padding-right: 34px; }
+    select option { background: #1a1712; }
 
-    .header .eyebrow {
-      font-size: 10px;
-      letter-spacing: 0.3em;
-      color: var(--gold);
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
+    /* EMOJI */
+    .emoji-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+    .emoji-opt { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 19px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; transition: border-color 0.2s, transform 0.1s; }
+    .emoji-opt:hover { transform: scale(1.1); }
+    .emoji-opt.active { border-color: var(--gold); background: #2a2318; }
 
-    .header h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(28px, 6vw, 40px);
-      font-weight: 700;
-      line-height: 1.1;
-      color: var(--cream);
-    }
+    /* THEMES */
+    .theme-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+    .theme-swatch { height: 46px; border-radius: 4px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s, transform 0.1s; position: relative; overflow: hidden; }
+    .theme-swatch:hover { transform: scale(1.04); }
+    .theme-swatch.active { border-color: var(--gold); }
+    .theme-swatch span { position: absolute; bottom: 3px; left: 0; right: 0; text-align: center; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; }
 
-    .header h1 em {
-      font-style: italic;
-      color: var(--gold-light);
-    }
+    /* BG */
+    .bg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    .bg-option { height: 52px; border-radius: 4px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; }
+    .bg-option:hover { border-color: var(--muted); }
+    .bg-option.active { border-color: var(--gold); }
+    .bg-option span { font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; }
 
-    .header p {
-      margin-top: 12px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .form-group {
-      margin-bottom: 24px;
-    }
-
-    label {
-      display: block;
-      font-size: 10px;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 8px;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--cream);
-      font-family: 'DM Mono', monospace;
-      font-size: 14px;
-      padding: 14px 16px;
-      border-radius: 4px;
-      outline: none;
-      transition: border-color 0.2s;
-      appearance: none;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--gold);
-    }
-
-    input::placeholder, textarea::placeholder {
-      color: var(--muted);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-      line-height: 1.6;
-    }
-
-    select {
-      cursor: pointer;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23c9913a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 16px center;
-      padding-right: 40px;
-    }
-
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 32px 0;
-    }
-
-    .generate-btn {
-      width: 100%;
-      background: var(--gold);
-      color: var(--bg);
-      border: none;
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      padding: 18px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-    }
-
+    .divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+    .generate-btn { width: 100%; background: var(--gold); color: var(--bg); border: none; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; padding: 16px; border-radius: 3px; cursor: pointer; transition: background 0.2s, transform 0.1s; }
     .generate-btn:hover { background: var(--gold-light); }
     .generate-btn:active { transform: scale(0.98); }
-
-    .result {
-      margin-top: 32px;
-      padding: 24px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      display: none;
-    }
-
+    .result { margin-top: 20px; padding: 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 3px; display: none; }
     .result.visible { display: block; animation: fadeUp 0.4s ease both; }
-
-    .result-label {
-      font-size: 10px;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 12px;
-    }
-
-    .result-url {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 12px 14px;
-      font-size: 12px;
-      color: var(--muted);
-      word-break: break-all;
-      line-height: 1.5;
-      margin-bottom: 16px;
-    }
-
-    .copy-btn {
-      width: 100%;
-      background: transparent;
-      border: 1px solid var(--gold);
-      color: var(--gold);
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      padding: 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
+    @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    .result-label { font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .result-url { background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 9px 11px; font-size: 11px; color: var(--muted); word-break: break-all; line-height: 1.5; margin-bottom: 10px; }
+    .btn-row { display: flex; gap: 8px; }
+    .copy-btn { flex: 1; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 10px; border-radius: 3px; cursor: pointer; transition: all 0.2s; }
     .copy-btn:hover { background: var(--gold); color: var(--bg); }
-    .copy-btn.copied { background: #2a4a2a; border-color: #4a8a4a; color: #7ac97a; }
+    .copy-btn.copied { background: #1a3a1a; border-color: var(--green); color: #7ac97a; }
+    .preview-link-btn { flex: 1; background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 10px; border-radius: 3px; cursor: pointer; text-decoration: none; text-align: center; transition: all 0.2s; }
+    .preview-link-btn:hover { color: var(--cream); border-color: var(--cream); }
 
-    .preview-link {
-      display: block;
-      text-align: center;
-      margin-top: 12px;
-      font-size: 11px;
-      color: var(--muted);
-      text-decoration: none;
-      letter-spacing: 0.1em;
-    }
-    .preview-link:hover { color: var(--cream); }
-
-    .footer-note {
-      text-align: center;
-      margin-top: 48px;
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.8;
-    }
+    @media (max-width: 900px) { body { flex-direction: column; } .form-panel { max-width: 100%; border-right: none; padding: 28px 18px; } .preview-panel { display: none; } }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="eyebrow">✦ Watch Together ✦</div>
-      <h1>Build your <em>invitation</em></h1>
-      <p>Fill in the details. Get a link. Send it.<br/>No app required. No excuses accepted.</p>
+
+<div class="form-panel">
+  <div class="header">
+    <div class="eyebrow">✦ Watch Together ✦</div>
+    <h1>Build your <em>invitation</em></h1>
+  </div>
+
+  <div class="section-title">✦ Content</div>
+
+  <div class="form-group">
+    <label>Their Name</label>
+    <input type="text" id="toName" placeholder="小红, Sarah…" oninput="updatePreview()" />
+  </div>
+  <div class="form-group">
+    <label>Show / Movie Title</label>
+    <input type="text" id="title" placeholder="爱情公寓, Crazy Rich Asians…" oninput="updatePreview()" />
+  </div>
+  <div class="form-group">
+    <label>Icon / Emoji</label>
+    <div class="emoji-grid" id="emojiGrid"></div>
+  </div>
+  <div class="form-group">
+    <label>Tagline <span style="color:var(--muted);font-size:9px;">(one line per row)</span></label>
+    <textarea id="tagline" placeholder="Two idiots.&#10;One movie.&#10;Zero planning skills." oninput="updatePreview()"></textarea>
+  </div>
+  <div class="form-group">
+    <label>When</label>
+    <input type="text" id="time" placeholder="Friday 8pm · 周五晚上八点" oninput="updatePreview()" />
+  </div>
+  <div class="form-group">
+    <label>Where / Platform</label>
+    <input type="text" id="platform" placeholder="Netflix · 你家沙发" oninput="updatePreview()" />
+  </div>
+  <div class="form-group">
+    <label>Your Name</label>
+    <input type="text" id="fromName" placeholder="你自己" oninput="updatePreview()" />
+  </div>
+  <div class="form-group">
+    <label>Language</label>
+    <select id="lang" onchange="updatePreview()">
+      <option value="en">English</option>
+      <option value="zh">中文</option>
+      <option value="mixed">Mixed 中英混合</option>
+    </select>
+  </div>
+
+  <hr class="divider" />
+  <div class="section-title">✦ Button Text</div>
+
+  <div class="form-group">
+    <label>Accept Button</label>
+    <input type="text" id="btnYes" placeholder="★ Watch Together" oninput="updatePreview()" />
+  </div>
+  <div class="form-group">
+    <label>Decline Button</label>
+    <input type="text" id="btnNo" placeholder="Pretend To Be Busy" oninput="updatePreview()" />
+  </div>
+  <div class="form-group">
+    <label>Confirmation Note <span style="color:var(--muted);font-size:9px;">(self-aware corner note after YES)</span></label>
+    <textarea id="snark" placeholder="Oh no. They said yes.&#10;Now I actually have to show up." oninput="updatePreview()"></textarea>
+  </div>
+
+  <hr class="divider" />
+  <div class="section-title">✦ Design</div>
+
+  <div class="form-group">
+    <label>Color Theme</label>
+    <div class="theme-grid" id="themeGrid"></div>
+  </div>
+  <div class="form-group" style="margin-top:18px;">
+    <label>Background Style</label>
+    <div class="bg-grid" id="bgGrid"></div>
+  </div>
+  <div class="form-group" style="margin-top:18px;">
+    <label>Custom Background Image <span style="color:var(--muted);font-size:9px;">(overrides style above)</span></label>
+    <div id="uploadZone" style="border:1px dashed var(--border);border-radius:4px;padding:20px;text-align:center;cursor:pointer;transition:border-color 0.2s;" onclick="document.getElementById('bgUpload').click()" ondragover="event.preventDefault();this.style.borderColor='var(--gold)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handleDrop(event)">
+      <div id="uploadPrompt" style="font-size:11px;color:var(--muted);line-height:1.8;">
+        Click or drag &amp; drop an image<br/>
+        <span style="font-size:10px;opacity:0.6;">JPG, PNG, GIF, WebP</span>
+      </div>
+      <div id="uploadPreview" style="display:none;">
+        <img id="uploadThumb" style="max-height:80px;max-width:100%;border-radius:3px;object-fit:cover;" />
+        <div style="margin-top:8px;font-size:10px;color:var(--gold)" id="uploadName"></div>
+      </div>
     </div>
-
-    <div class="form-group">
-      <label>Their Name</label>
-      <input type="text" id="toName" placeholder="小红, Sarah, 你懂的那个人…" />
-    </div>
-
-    <div class="form-group">
-      <label>Show / Movie Title</label>
-      <input type="text" id="title" placeholder="爱情公寓, Crazy Rich Asians…" />
-    </div>
-
-    <div class="form-group">
-      <label>Your Tagline <span style="color:var(--muted);font-size:10px;">(or leave blank for default)</span></label>
-      <textarea id="tagline" placeholder="Two idiots. One movie. Zero planning skills."></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>When</label>
-      <input type="text" id="time" placeholder="Friday 8pm · 周五晚上八点" />
-    </div>
-
-    <div class="form-group">
-      <label>Where / Platform</label>
-      <input type="text" id="platform" placeholder="Netflix · 你家沙发 · My place" />
-    </div>
-
-    <div class="form-group">
-      <label>Your Name (the sender)</label>
-      <input type="text" id="fromName" placeholder="你自己" />
-    </div>
-
-    <hr class="divider" />
-
-    <button class="generate-btn" onclick="generateLink()">
-      ✦ Generate Invite Link
-    </button>
-
-    <div class="result" id="result">
-      <div class="result-label">Your invite link</div>
-      <div class="result-url" id="resultUrl"></div>
-      <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy Link</button>
-      <a class="preview-link" id="previewLink" target="_blank">→ Preview what they'll see</a>
-    </div>
-
-    <div class="footer-note">
-      Powered by zero algorithms &amp; one questionable movie taste.<br/>
-      Links work forever. No sign-up. No tracking.
+    <input type="file" id="bgUpload" accept="image/*" style="display:none" onchange="handleImageUpload(this)" />
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <select id="bgImgSize" onchange="updatePreview()" style="flex:1;">
+        <option value="cover">Cover (填满)</option>
+        <option value="contain">Contain (完整显示)</option>
+        <option value="repeat">Tile (重复)</option>
+      </select>
+      <button onclick="clearCustomBg()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;padding:8px 12px;border-radius:3px;cursor:pointer;white-space:nowrap;">✕ Clear</button>
     </div>
   </div>
 
-  <script>
-    let generatedUrl = '';
+  <hr class="divider" />
+  <div class="section-title">✦ Expiry (optional)</div>
 
-    function generateLink() {
-      const to = document.getElementById('toName').value.trim();
-      const title = document.getElementById('title').value.trim();
-      const tagline = document.getElementById('tagline').value.trim();
-      const time = document.getElementById('time').value.trim();
-      const platform = document.getElementById('platform').value.trim();
-      const from = document.getElementById('fromName').value.trim();
+  <div class="form-group">
+    <label>Invite Expires At</label>
+    <input type="datetime-local" id="expiry" onchange="updatePreview()" />
+    <p style="font-size:10px;color:var(--muted);margin-top:5px;">After this time, invite shows "Too late." Leave blank for no expiry.</p>
+  </div>
 
-      if (!to || !title) {
-        alert('At least fill in their name and the show/movie title!');
-        return;
-      }
+  <hr class="divider" />
+  <button class="generate-btn" onclick="generateLink()">✦ Generate Invite Link</button>
 
-      const params = new URLSearchParams();
-      if (to) params.set('to', to);
-      if (title) params.set('title', title);
-      if (tagline) params.set('tagline', tagline);
-      if (time) params.set('time', time);
-      if (platform) params.set('platform', platform);
-      if (from) params.set('from', from);
+  <div class="result" id="result">
+    <div class="result-label">Your invite link</div>
+    <div class="result-url" id="resultUrl"></div>
+    <div class="btn-row">
+      <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy Link</button>
+      <a class="preview-link-btn" id="previewLinkBtn" target="_blank">Open Preview →</a>
+    </div>
+  </div>
+</div>
 
-      // Build invite.html URL relative to current location
-      const base = window.location.href.replace('builder.html', 'invite.html');
-      generatedUrl = `${base}?${params.toString()}`;
+<div class="preview-panel">
+  <div class="preview-label">✦ Live Preview</div>
+  <div class="preview-frame">
+    <div class="mini-invite" id="miniInvite">
+      <div class="m-emoji" id="pEmoji">🎬</div>
+      <div class="m-eyebrow" id="pEyebrow">✦ A Formal Invitation ✦</div>
+      <div class="m-greeting" id="pGreeting">Dear Friend,</div>
+      <div class="m-title">Let's watch<br/><em id="pTitle">something</em></div>
+      <div class="m-tagline" id="pTagline">Two idiots.<br/>One movie.<br/>Zero planning skills.</div>
+      <div class="m-meta" id="pMeta"></div>
+      <button class="m-btn-yes" id="pBtnYes">★ Watch Together</button>
+      <button class="m-btn-no" id="pBtnNo">Pretend To Be Busy</button>
+      <div class="m-from" id="pFrom"></div>
+    </div>
+  </div>
+  <p style="font-size:10px;color:var(--muted);margin-top:14px;text-align:center;letter-spacing:0.1em;">This is what your friend will see</p>
+</div>
 
-      document.getElementById('resultUrl').textContent = generatedUrl;
-      document.getElementById('previewLink').href = generatedUrl;
-      document.getElementById('result').classList.add('visible');
+<script>
+  const themes = [
+    { id:'dark',    name:'Noir',     bg:'#fdf6ec', ink:'#1a1208', gold:'#c9913a', btnBg:'#1a1208', btnColor:'#fdf6ec', noBorder:'#ddd0bc', noColor:'#9a8878' },
+    { id:'night',   name:'Midnight', bg:'#0d0d1a', ink:'#e8e0f0', gold:'#9b7fd4', btnBg:'#9b7fd4', btnColor:'#0d0d1a', noBorder:'#2a2a3a', noColor:'#6b6380' },
+    { id:'rose',    name:'Blush',    bg:'#fff0f3', ink:'#3a1a20', gold:'#d4617a', btnBg:'#3a1a20', btnColor:'#fff0f3', noBorder:'#f0c0cc', noColor:'#a06070' },
+    { id:'forest',  name:'Forest',   bg:'#f0f5ee', ink:'#1a2e1a', gold:'#5a8a4a', btnBg:'#1a2e1a', btnColor:'#f0f5ee', noBorder:'#c0d8b8', noColor:'#607060' },
+    { id:'slate',   name:'Slate',    bg:'#f4f6f8', ink:'#1a2030', gold:'#4a6fa5', btnBg:'#1a2030', btnColor:'#f4f6f8', noBorder:'#c8d0dc', noColor:'#7080a0' },
+    { id:'sand',    name:'Sand',     bg:'#faf5e4', ink:'#2a2010', gold:'#b8942a', btnBg:'#2a2010', btnColor:'#faf5e4', noBorder:'#e0d0a0', noColor:'#a09060' },
+    { id:'cherry',  name:'Cherry',   bg:'#fff8f8', ink:'#2a0808', gold:'#c02020', btnBg:'#2a0808', btnColor:'#fff8f8', noBorder:'#f0b8b8', noColor:'#a06060' },
+    { id:'ink',     name:'Ink',      bg:'#1a1a1a', ink:'#f0f0f0', gold:'#f0c040', btnBg:'#f0c040', btnColor:'#1a1a1a', noBorder:'#3a3a3a', noColor:'#707070' },
+    { id:'pastel',  name:'Pastel',   bg:'#fde8f0', ink:'#4a1a30', gold:'#d4709a', btnBg:'#d4709a', btnColor:'#fff0f5', noBorder:'#f0b8d0', noColor:'#c090a8' },
+  ];
+
+  const bgStyles = [
+    { id:'none',     name:'Clean' },
+    { id:'grain',    name:'Grain' },
+    { id:'lines',    name:'Lines' },
+    { id:'dots',     name:'Dots' },
+    { id:'diagonal', name:'Diagonal' },
+    { id:'mesh',     name:'Mesh' },
+  ];
+
+  const bgCSS = {
+    none: { image: '', size: '' },
+    grain: { image: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E")`, size: '' },
+    lines: { image: `repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(0,0,0,0.05) 28px,rgba(0,0,0,0.05) 29px)`, size: '' },
+    dots: { image: `radial-gradient(circle,rgba(0,0,0,0.09) 1px,transparent 1px)`, size: '20px 20px' },
+    diagonal: { image: `repeating-linear-gradient(45deg,transparent,transparent 18px,rgba(0,0,0,0.04) 18px,rgba(0,0,0,0.04) 19px)`, size: '' },
+    mesh: { image: `radial-gradient(ellipse at 20% 20%,rgba(0,0,0,0.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(0,0,0,0.06) 0%,transparent 50%)`, size: '' },
+  };
+
+  const emojis = ['🎬','🍿','🎭','🎥','📺','🌙','❤️','🔥','✨','👀','🎞️','🛋️'];
+
+  let selectedTheme = themes[0];
+  let selectedBg = bgStyles[0];
+  let selectedEmoji = '🎬';
+  let customBgDataUrl = '';
+  let customBgSize = 'cover';
+
+  function handleImageUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      customBgDataUrl = e.target.result;
+      document.getElementById('uploadThumb').src = customBgDataUrl;
+      document.getElementById('uploadName').textContent = file.name;
+      document.getElementById('uploadPrompt').style.display = 'none';
+      document.getElementById('uploadPreview').style.display = 'block';
+      document.getElementById('uploadZone').style.borderColor = 'var(--gold)';
+      updatePreview();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('uploadZone').style.borderColor = 'var(--border)';
+    const file = e.dataTransfer.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    const fakeInput = { files: [file] };
+    handleImageUpload(fakeInput);
+  }
+
+  function clearCustomBg() {
+    customBgDataUrl = '';
+    document.getElementById('bgUpload').value = '';
+    document.getElementById('uploadPrompt').style.display = 'block';
+    document.getElementById('uploadPreview').style.display = 'none';
+    document.getElementById('uploadZone').style.borderColor = 'var(--border)';
+    updatePreview();
+  }
+
+  // Build emoji grid
+  const eg = document.getElementById('emojiGrid');
+  emojis.forEach(e => {
+    const el = document.createElement('div');
+    el.className = 'emoji-opt' + (e === selectedEmoji ? ' active' : '');
+    el.textContent = e;
+    el.onclick = () => {
+      document.querySelectorAll('.emoji-opt').forEach(x => x.classList.remove('active'));
+      el.classList.add('active');
+      selectedEmoji = e;
+      updatePreview();
+    };
+    eg.appendChild(el);
+  });
+
+  // Build theme grid
+  const tg = document.getElementById('themeGrid');
+  themes.forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'theme-swatch' + (t.id === selectedTheme.id ? ' active' : '');
+    el.style.background = `linear-gradient(135deg,${t.bg} 50%,${t.btnBg} 50%)`;
+    el.innerHTML = `<span style="color:${t.gold};text-shadow:0 1px 2px rgba(0,0,0,0.3)">${t.name}</span>`;
+    el.onclick = () => {
+      document.querySelectorAll('.theme-swatch').forEach(x => x.classList.remove('active'));
+      el.classList.add('active');
+      selectedTheme = t;
+      updatePreview();
+    };
+    tg.appendChild(el);
+  });
+
+  // Build bg grid
+  const bgg = document.getElementById('bgGrid');
+  bgStyles.forEach(b => {
+    const el = document.createElement('div');
+    el.className = 'bg-option' + (b.id === selectedBg.id ? ' active' : '');
+    el.style.background = '#f5efe3';
+    const bdata = bgCSS[b.id];
+    if (bdata.image) { el.style.backgroundImage = bdata.image; if (bdata.size) el.style.backgroundSize = bdata.size; }
+    el.innerHTML = `<span style="color:#6b5a40">${b.name}</span>`;
+    el.onclick = () => {
+      document.querySelectorAll('.bg-option').forEach(x => x.classList.remove('active'));
+      el.classList.add('active');
+      selectedBg = b;
+      updatePreview();
+    };
+    bgg.appendChild(el);
+  });
+
+  const langText = {
+    en:    { eyebrow:'✦ A Formal Invitation ✦', letWatch:"Let's watch", dear:'Dear', when:'When', where:'Where', btnYes:'★ Watch Together', btnNo:'Pretend To Be Busy' },
+    zh:    { eyebrow:'✦ 正式邀请函 ✦', letWatch:'一起看', dear:'亲爱的', when:'时间', where:'地点', btnYes:'★ 一起看！', btnNo:'假装很忙' },
+    mixed: { eyebrow:'✦ A Formal Invitation ✦', letWatch:"Let's watch", dear:'Dear', when:'When 时间', where:'Where 地点', btnYes:'★ Watch Together 一起看', btnNo:'假装很忙' },
+  };
+
+  function updatePreview() {
+    const to = document.getElementById('toName').value || 'Friend';
+    const title = document.getElementById('title').value || 'something';
+    const taglineRaw = document.getElementById('tagline').value;
+    const time = document.getElementById('time').value;
+    const platform = document.getElementById('platform').value;
+    const from = document.getElementById('fromName').value;
+    const btnYesVal = document.getElementById('btnYes').value;
+    const btnNoVal = document.getElementById('btnNo').value;
+    const lang = document.getElementById('lang').value;
+    const expiry = document.getElementById('expiry').value;
+    const t = selectedTheme;
+    const lt = langText[lang];
+    const mi = document.getElementById('miniInvite');
+
+    mi.style.background = t.bg;
+    mi.style.color = t.ink;
+    if (customBgDataUrl) {
+      const sz = document.getElementById('bgImgSize').value;
+      mi.style.backgroundImage = `url("${customBgDataUrl}")`;
+      mi.style.backgroundSize = sz === 'repeat' ? 'auto' : sz;
+      mi.style.backgroundRepeat = sz === 'repeat' ? 'repeat' : 'no-repeat';
+      mi.style.backgroundPosition = 'center';
+    } else {
+      const bd = bgCSS[selectedBg.id];
+      mi.style.backgroundImage = bd.image || '';
+      mi.style.backgroundSize = bd.size || '';
+      mi.style.backgroundRepeat = '';
+      mi.style.backgroundPosition = '';
     }
 
-    function copyLink() {
-      navigator.clipboard.writeText(generatedUrl).then(() => {
-        const btn = document.getElementById('copyBtn');
-        btn.textContent = '✓ Copied!';
-        btn.classList.add('copied');
-        setTimeout(() => {
-          btn.textContent = 'Copy Link';
-          btn.classList.remove('copied');
-        }, 2000);
-      });
+    document.getElementById('pEmoji').textContent = selectedEmoji;
+    document.getElementById('pEyebrow').textContent = lt.eyebrow;
+    document.getElementById('pEyebrow').style.color = t.gold;
+    document.getElementById('pGreeting').textContent = `${lt.dear} ${to},`;
+    document.getElementById('pTitle').textContent = title;
+    document.getElementById('pTitle').style.color = t.gold;
+
+    const tLines = taglineRaw ? taglineRaw.split('\n').filter(Boolean) : ['Two idiots.','One movie.','Zero planning skills.'];
+    document.getElementById('pTagline').innerHTML = tLines.join('<br/>');
+
+    const meta = document.getElementById('pMeta');
+    meta.innerHTML = '';
+    if (time) meta.innerHTML += `<div class="m-meta-item"><div class="m-meta-label" style="color:${t.gold}">${lt.when}</div><div class="m-meta-value">${time}</div></div>`;
+    if (platform) meta.innerHTML += `<div class="m-meta-item"><div class="m-meta-label" style="color:${t.gold}">${lt.where}</div><div class="m-meta-value">${platform}</div></div>`;
+
+    const yBtn = document.getElementById('pBtnYes');
+    yBtn.textContent = btnYesVal || lt.btnYes;
+    yBtn.style.background = t.btnBg; yBtn.style.color = t.btnColor;
+
+    const nBtn = document.getElementById('pBtnNo');
+    nBtn.textContent = btnNoVal || lt.btnNo;
+    nBtn.style.border = `1px solid ${t.noBorder}`; nBtn.style.color = t.noColor;
+
+    document.getElementById('pFrom').textContent = from ? `— ${from}` : '';
+
+    const existing = mi.querySelector('.m-expired');
+    if (existing) existing.remove();
+    if (expiry && new Date() > new Date(expiry)) {
+      const overlay = document.createElement('div');
+      overlay.className = 'm-expired';
+      overlay.textContent = lang === 'zh' ? '太晚了。' : 'Too late.';
+      mi.appendChild(overlay);
     }
-  </script>
+  }
+
+  let generatedUrl = '';
+
+  function generateLink() {
+    const to = document.getElementById('toName').value.trim();
+    const title = document.getElementById('title').value.trim();
+    if (!to || !title) { alert('Please fill in at least their name and the title!'); return; }
+
+    const p = new URLSearchParams();
+    p.set('to', to); p.set('title', title); p.set('emoji', selectedEmoji);
+    const tagline = document.getElementById('tagline').value.trim(); if (tagline) p.set('tagline', tagline);
+    const time = document.getElementById('time').value.trim(); if (time) p.set('time', time);
+    const platform = document.getElementById('platform').value.trim(); if (platform) p.set('platform', platform);
+    const from = document.getElementById('fromName').value.trim(); if (from) p.set('from', from);
+    const btnYes = document.getElementById('btnYes').value.trim(); if (btnYes) p.set('btnYes', btnYes);
+    const btnNo = document.getElementById('btnNo').value.trim(); if (btnNo) p.set('btnNo', btnNo);
+    const snark = document.getElementById('snark').value.trim(); if (snark) p.set('snark', snark);
+    p.set('theme', selectedTheme.id); p.set('bg', selectedBg.id);
+    p.set('lang', document.getElementById('lang').value);
+    const expiry = document.getElementById('expiry').value; if (expiry) p.set('expiry', expiry);
+    if (customBgDataUrl) {
+      p.set('bgImgSize', document.getElementById('bgImgSize').value);
+      p.set('hasCustomBg', '1');
+      // Store image in sessionStorage so index.html can read it
+      try { sessionStorage.setItem('customBgImg', customBgDataUrl); } catch(e) {}
+    }
+
+    const base = window.location.href.replace('builder.html', 'index.html');
+    generatedUrl = `${base}?${p.toString()}`;
+
+    document.getElementById('resultUrl').textContent = generatedUrl;
+    document.getElementById('previewLinkBtn').href = generatedUrl;
+    document.getElementById('result').classList.add('visible');
+
+    if (customBgDataUrl) {
+      document.getElementById('resultUrl').insertAdjacentHTML('afterend',
+        `<p style="font-size:10px;color:var(--gold);margin:6px 0 10px;line-height:1.6;">⚠️ Custom image only works on the same device/browser (stored locally). For sharing, use a pattern style instead.</p>`
+      );
+    }
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(generatedUrl).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ Copied!'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy Link'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  updatePreview();
+</script>
 </body>
 </html>

@@ -9,20 +9,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg: #fdf6ec;
-      --ink: #1a1208;
-      --gold: #c9913a;
-      --gold-light: #e8b86d;
-      --red: #c8392b;
-      --muted: #9a8878;
-      --border: #ddd0bc;
-      --ticket-bg: #fffaf4;
-    }
-
     body {
-      background: var(--bg);
-      color: var(--ink);
       font-family: 'DM Mono', monospace;
       min-height: 100vh;
       display: flex;
@@ -32,488 +19,331 @@
       padding: 40px 20px;
       position: relative;
       overflow: hidden;
+      transition: background 0.3s, color 0.3s;
     }
 
-    /* Subtle film-grain texture via repeating radial */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      opacity: 0.5;
-    }
+    .corner { position: fixed; width: 36px; height: 36px; border-style: solid; opacity: 0.25; }
+    .corner.tl { top: 20px; left: 20px; border-width: 1px 0 0 1px; }
+    .corner.tr { top: 20px; right: 20px; border-width: 1px 1px 0 0; }
+    .corner.bl { bottom: 20px; left: 20px; border-width: 0 0 1px 1px; }
+    .corner.br { bottom: 20px; right: 20px; border-width: 0 1px 1px 0; }
 
-    /* Decorative corner marks */
-    .corner {
-      position: fixed;
-      width: 40px;
-      height: 40px;
-      border-color: var(--gold);
-      border-style: solid;
-      opacity: 0.3;
-    }
-    .corner.tl { top: 24px; left: 24px; border-width: 1px 0 0 1px; }
-    .corner.tr { top: 24px; right: 24px; border-width: 1px 1px 0 0; }
-    .corner.bl { bottom: 24px; left: 24px; border-width: 0 0 1px 1px; }
-    .corner.br { bottom: 24px; right: 24px; border-width: 0 1px 1px 0; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-    /* ── INVITE VIEW ── */
+    /* ── EXPIRED ── */
+    #expiredView {
+      text-align: center;
+      animation: fadeUp 0.6s ease both;
+    }
+    .exp-title { font-family: 'Playfair Display', serif; font-size: clamp(36px, 9vw, 56px); font-weight: 700; font-style: italic; margin-bottom: 16px; }
+    .exp-sub { font-size: 13px; opacity: 0.5; line-height: 1.8; }
+
+    /* ── INVITE ── */
     #inviteView {
       width: 100%;
-      max-width: 480px;
+      max-width: 460px;
       text-align: center;
       animation: fadeUp 0.7s ease both;
+      display: none;
     }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .eyebrow {
-      font-size: 10px;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 20px;
-    }
-
-    .greeting {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(13px, 3vw, 16px);
-      font-weight: 400;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .main-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(32px, 8vw, 52px);
-      font-weight: 700;
-      line-height: 1.1;
-      margin-bottom: 24px;
-      color: var(--ink);
-    }
-
-    .main-title em {
-      font-style: italic;
-      color: var(--gold);
-      display: block;
-    }
-
-    .tagline {
-      font-size: 14px;
-      line-height: 2;
-      color: var(--ink);
-      margin-bottom: 40px;
-      opacity: 0.75;
-    }
-
-    .tagline span {
-      display: block;
-    }
-
-    .meta-row {
-      display: flex;
-      justify-content: center;
-      gap: 32px;
-      margin-bottom: 48px;
-      flex-wrap: wrap;
-    }
-
-    .meta-item {
-      text-align: center;
-    }
-
-    .meta-label {
-      font-size: 9px;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 4px;
-    }
-
-    .meta-value {
-      font-size: 13px;
-      color: var(--ink);
-    }
-
-    .btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-width: 320px;
-      margin: 0 auto;
-    }
-
-    .btn-yes {
-      background: var(--ink);
-      color: var(--bg);
-      border: none;
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      padding: 18px 32px;
-      border-radius: 2px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-    }
-
-    .btn-yes:hover { background: var(--gold); }
+    .eyebrow { font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; margin-bottom: 18px; }
+    .greeting { font-family: 'Playfair Display', serif; font-size: clamp(13px,3vw,15px); font-weight: 400; margin-bottom: 6px; opacity: 0.6; }
+    .main-title { font-family: 'Playfair Display', serif; font-size: clamp(30px,8vw,50px); font-weight: 700; line-height: 1.1; margin-bottom: 22px; }
+    .main-title em { font-style: italic; display: block; }
+    .tagline { font-size: 14px; line-height: 2; margin-bottom: 36px; opacity: 0.7; }
+    .tagline span { display: block; }
+    .meta-row { display: flex; justify-content: center; gap: 28px; margin-bottom: 44px; flex-wrap: wrap; }
+    .meta-item { text-align: center; }
+    .meta-label { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 4px; }
+    .meta-value { font-size: 13px; }
+    .btn-group { display: flex; flex-direction: column; gap: 10px; max-width: 300px; margin: 0 auto; }
+    .btn-yes { border: none; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; padding: 17px 32px; border-radius: 2px; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
+    .btn-yes:hover { opacity: 0.85; }
     .btn-yes:active { transform: scale(0.98); }
+    .btn-no { background: transparent; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; padding: 13px 32px; border-radius: 2px; cursor: pointer; transition: all 0.2s; }
+    .from-line { margin-top: 36px; font-size: 11px; opacity: 0.4; letter-spacing: 0.1em; }
+    .big-emoji { font-size: 40px; margin-bottom: 12px; }
 
-    .btn-no {
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      padding: 14px 32px;
-      border-radius: 2px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-no:hover { color: var(--red); border-color: var(--red); }
-
-    .from-line {
-      margin-top: 40px;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.1em;
-    }
-
-    /* ── TICKET VIEW ── */
+    /* ── TICKET ── */
     #ticketView {
       display: none;
       width: 100%;
-      max-width: 480px;
+      max-width: 440px;
       animation: fadeUp 0.5s ease both;
     }
-
     #ticketView.visible { display: block; }
+    .ticket { border-radius: 4px; overflow: hidden; box-shadow: 0 8px 48px rgba(0,0,0,0.12); position: relative; border: 1px solid; }
+    .ticket-header { text-align: center; padding: 22px; }
+    .ticket-header .admit { font-size: 9px; letter-spacing: 0.4em; text-transform: uppercase; opacity: 0.7; margin-bottom: 6px; }
+    .ticket-header .admit-two { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; letter-spacing: 0.05em; }
+    .ticket-body { padding: 28px 28px 20px; }
+    .ticket-title { font-family: 'Playfair Display', serif; font-style: italic; font-size: clamp(22px,6vw,34px); font-weight: 700; text-align: center; margin-bottom: 24px; line-height: 1.1; }
+    .ticket-details { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
+    .ticket-detail { border-left: 2px solid; padding-left: 10px; }
+    .td-label { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; opacity: 0.5; margin-bottom: 3px; }
+    .td-value { font-size: 12px; line-height: 1.4; }
+    .perf { position: relative; margin: 0 -1px; height: 1px; overflow: visible; }
+    .perf::before, .perf::after { content:''; position:absolute; width:18px; height:18px; border-radius:50%; top:-9px; border:1px solid; }
+    .perf::before { left:-10px; }
+    .perf::after { right:-10px; }
+    .ticket-stub { padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; }
+    .seat-info { font-size: 11px; opacity: 0.6; }
+    .seat-info strong { display: block; font-size: 12px; opacity: 1; margin-bottom: 2px; }
+    .ticket-no { font-size: 10px; opacity: 0.25; letter-spacing: 0.2em; }
+    .snark-note { margin-top: 20px; text-align: right; font-size: 11px; opacity: 0.5; font-style: italic; line-height: 1.6; padding-right: 4px; }
+    .snark-note strong { display: block; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; font-style: normal; margin-bottom: 3px; }
 
-    .ticket {
-      background: var(--ticket-bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-      box-shadow: 0 8px 48px rgba(0,0,0,0.08);
-      position: relative;
-    }
-
-    .ticket-header {
-      background: var(--ink);
-      color: var(--gold-light);
-      text-align: center;
-      padding: 24px;
-    }
-
-    .ticket-header .admit {
-      font-size: 9px;
-      letter-spacing: 0.4em;
-      text-transform: uppercase;
-      opacity: 0.7;
-      margin-bottom: 8px;
-    }
-
-    .ticket-header .admit-two {
-      font-family: 'Playfair Display', serif;
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-    }
-
-    .ticket-body {
-      padding: 32px 32px 24px;
-    }
-
-    .ticket-title {
-      font-family: 'Playfair Display', serif;
-      font-style: italic;
-      font-size: clamp(24px, 6vw, 36px);
-      font-weight: 700;
-      color: var(--ink);
-      text-align: center;
-      margin-bottom: 28px;
-      line-height: 1.1;
-    }
-
-    .ticket-details {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 28px;
-    }
-
-    .ticket-detail {
-      border-left: 2px solid var(--gold);
-      padding-left: 12px;
-    }
-
-    .ticket-detail .td-label {
-      font-size: 9px;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-
-    .ticket-detail .td-value {
-      font-size: 13px;
-      color: var(--ink);
-      line-height: 1.4;
-    }
-
-    /* Perforation line */
-    .perf {
-      position: relative;
-      margin: 0 -1px;
-      height: 1px;
-      background: var(--border);
-      overflow: visible;
-    }
-
-    .perf::before, .perf::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: var(--bg);
-      border-radius: 50%;
-      top: -10px;
-      border: 1px solid var(--border);
-    }
-    .perf::before { left: -11px; }
-    .perf::after { right: -11px; }
-
-    .ticket-stub {
-      padding: 20px 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .seat-info {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .seat-info strong {
-      display: block;
-      font-size: 13px;
-      color: var(--ink);
-      margin-bottom: 2px;
-    }
-
-    .ticket-no {
-      font-size: 10px;
-      color: var(--border);
-      letter-spacing: 0.2em;
-    }
-
-    /* The B part — self-aware corner note */
-    .snark-note {
-      margin-top: 24px;
-      text-align: right;
-      font-size: 11px;
-      color: var(--muted);
-      font-style: italic;
-      line-height: 1.6;
-      padding-right: 4px;
-    }
-
-    .snark-note strong {
-      display: block;
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      font-style: normal;
-      color: var(--gold);
-      margin-bottom: 4px;
-    }
-
-    /* NO response */
+    /* ── NO ── */
     #noView {
       display: none;
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
       text-align: center;
       animation: fadeUp 0.5s ease both;
     }
-
     #noView.visible { display: block; }
-
-    .no-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(28px, 7vw, 44px);
-      font-weight: 700;
-      margin-bottom: 16px;
-      line-height: 1.1;
-    }
-
-    .no-sub {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.8;
-      margin-bottom: 32px;
-    }
-
-    .no-sub em {
-      font-style: italic;
-      color: var(--ink);
-    }
-
-    .undo-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      padding: 12px 24px;
-      border-radius: 2px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .undo-btn:hover { color: var(--ink); border-color: var(--ink); }
+    .no-title { font-family: 'Playfair Display', serif; font-size: clamp(26px,7vw,42px); font-weight: 700; margin-bottom: 14px; line-height: 1.1; }
+    .no-sub { font-size: 13px; opacity: 0.6; line-height: 1.8; margin-bottom: 28px; }
+    .no-sub em { font-style: italic; opacity: 1; }
+    .undo-btn { background: transparent; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; padding: 12px 24px; border-radius: 2px; cursor: pointer; transition: all 0.2s; }
   </style>
 </head>
 <body>
-  <div class="corner tl"></div>
-  <div class="corner tr"></div>
-  <div class="corner bl"></div>
-  <div class="corner br"></div>
+  <div class="corner tl" id="cTL"></div>
+  <div class="corner tr" id="cTR"></div>
+  <div class="corner bl" id="cBL"></div>
+  <div class="corner br" id="cBR"></div>
 
-  <!-- INVITE VIEW -->
+  <!-- EXPIRED -->
+  <div id="expiredView" style="display:none;">
+    <div class="exp-title" id="expTitle">Too late.</div>
+    <div class="exp-sub" id="expSub">This invitation has expired.<br/>Maybe next time.</div>
+  </div>
+
+  <!-- INVITE -->
   <div id="inviteView">
-    <div class="eyebrow">✦ A Formal Invitation ✦</div>
-    <p class="greeting" id="greetingText">Dear friend,</p>
+    <div class="big-emoji" id="bigEmoji">🎬</div>
+    <div class="eyebrow" id="eyebrow">✦ A Formal Invitation ✦</div>
+    <p class="greeting" id="greetingText">Dear Friend,</p>
     <h1 class="main-title">
-      Let's watch<br/>
+      <span id="letWatch">Let's watch</span><br/>
       <em id="titleText">something</em>
     </h1>
-    <div class="tagline" id="taglineText">
-      <span>Two idiots.</span>
-      <span>One movie.</span>
-      <span>Zero planning skills.</span>
-    </div>
+    <div class="tagline" id="taglineText"></div>
     <div class="meta-row" id="metaRow"></div>
     <div class="btn-group">
-      <button class="btn-yes" onclick="sayYes()">★ Watch Together</button>
-      <button class="btn-no" onclick="sayNo()">Pretend To Be Busy</button>
+      <button class="btn-yes" id="btnYes" onclick="sayYes()">★ Watch Together</button>
+      <button class="btn-no" id="btnNo" onclick="sayNo()">Pretend To Be Busy</button>
     </div>
     <p class="from-line" id="fromLine"></p>
   </div>
 
-  <!-- TICKET VIEW (YES) -->
+  <!-- TICKET -->
   <div id="ticketView">
-    <div class="ticket">
-      <div class="ticket-header">
+    <div class="ticket" id="ticket">
+      <div class="ticket-header" id="ticketHeader">
         <div class="admit">✦ Admit ✦</div>
         <div class="admit-two">TWO</div>
       </div>
       <div class="ticket-body">
-        <div class="ticket-title" id="ticketTitle">The Movie</div>
+        <div class="ticket-title" id="ticketTitle"></div>
         <div class="ticket-details" id="ticketDetails"></div>
       </div>
-      <div class="perf"></div>
-      <div class="ticket-stub">
-        <div class="seat-info">
-          <strong>YOUR SEAT</strong>
-          The Couch, Left Side
-        </div>
+      <div class="perf" id="perf"></div>
+      <div class="ticket-stub" id="ticketStub">
+        <div class="seat-info"><strong>YOUR SEAT</strong>The Couch</div>
         <div class="ticket-no">#00001</div>
       </div>
     </div>
-    <div class="snark-note">
+    <div class="snark-note" id="snarkNote">
       <strong>a note from the organiser</strong>
-      Oh no. They said yes.<br/>
-      Now I actually have to show up.
+      Oh no. They said yes.<br/>Now I actually have to show up.
     </div>
   </div>
 
-  <!-- NO VIEW -->
+  <!-- NO -->
   <div id="noView">
-    <div class="no-title">Noted.<br/>Very convincing.</div>
-    <p class="no-sub">
-      "Busy." Sure.<br/>
-      <em>We both know you'll be on your phone anyway.</em>
-    </p>
-    <button class="undo-btn" onclick="undoNo()">Fine. I'll come.</button>
+    <div class="no-title" id="noTitle">Noted.<br/>Very convincing.</div>
+    <p class="no-sub" id="noSub">"Busy." Sure.<br/><em>We both know you'll be on your phone anyway.</em></p>
+    <button class="undo-btn" id="undoBtn" onclick="undoNo()">Fine. I'll come.</button>
   </div>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const to = params.get('to') || 'Dear Friend';
-    const title = params.get('title') || 'Something Good';
-    const tagline = params.get('tagline') || '';
-    const time = params.get('time') || '';
-    const platform = params.get('platform') || '';
-    const from = params.get('from') || '';
+<script>
+  const themes = {
+    dark:   { bg:'#fdf6ec', ink:'#1a1208', gold:'#c9913a', btnBg:'#1a1208', btnColor:'#fdf6ec', noBorder:'#ddd0bc', noColor:'#9a8878', ticketHeaderBg:'#1a1208', ticketHeaderColor:'#e8b86d', detailBorder:'#c9913a', perfBorder:'#ddd0bc', perfBg:'#fdf6ec' },
+    night:  { bg:'#0d0d1a', ink:'#e8e0f0', gold:'#9b7fd4', btnBg:'#9b7fd4', btnColor:'#0d0d1a', noBorder:'#2a2a3a', noColor:'#6b6380', ticketHeaderBg:'#9b7fd4', ticketHeaderColor:'#0d0d1a', detailBorder:'#9b7fd4', perfBorder:'#2a2a3a', perfBg:'#0d0d1a' },
+    rose:   { bg:'#fff0f3', ink:'#3a1a20', gold:'#d4617a', btnBg:'#3a1a20', btnColor:'#fff0f3', noBorder:'#f0c0cc', noColor:'#a06070', ticketHeaderBg:'#3a1a20', ticketHeaderColor:'#f0c0cc', detailBorder:'#d4617a', perfBorder:'#f0c0cc', perfBg:'#fff0f3' },
+    forest: { bg:'#f0f5ee', ink:'#1a2e1a', gold:'#5a8a4a', btnBg:'#1a2e1a', btnColor:'#f0f5ee', noBorder:'#c0d8b8', noColor:'#607060', ticketHeaderBg:'#1a2e1a', ticketHeaderColor:'#c0d8b8', detailBorder:'#5a8a4a', perfBorder:'#c0d8b8', perfBg:'#f0f5ee' },
+    slate:  { bg:'#f4f6f8', ink:'#1a2030', gold:'#4a6fa5', btnBg:'#1a2030', btnColor:'#f4f6f8', noBorder:'#c8d0dc', noColor:'#7080a0', ticketHeaderBg:'#1a2030', ticketHeaderColor:'#c8d0dc', detailBorder:'#4a6fa5', perfBorder:'#c8d0dc', perfBg:'#f4f6f8' },
+    sand:   { bg:'#faf5e4', ink:'#2a2010', gold:'#b8942a', btnBg:'#2a2010', btnColor:'#faf5e4', noBorder:'#e0d0a0', noColor:'#a09060', ticketHeaderBg:'#2a2010', ticketHeaderColor:'#e0d0a0', detailBorder:'#b8942a', perfBorder:'#e0d0a0', perfBg:'#faf5e4' },
+    cherry: { bg:'#fff8f8', ink:'#2a0808', gold:'#c02020', btnBg:'#2a0808', btnColor:'#fff8f8', noBorder:'#f0b8b8', noColor:'#a06060', ticketHeaderBg:'#2a0808', ticketHeaderColor:'#f0b8b8', detailBorder:'#c02020', perfBorder:'#f0b8b8', perfBg:'#fff8f8' },
+    ink:    { bg:'#1a1a1a', ink:'#f0f0f0', gold:'#f0c040', btnBg:'#f0c040', btnColor:'#1a1a1a', noBorder:'#3a3a3a', noColor:'#707070', ticketHeaderBg:'#f0c040', ticketHeaderColor:'#1a1a1a', detailBorder:'#f0c040', perfBorder:'#3a3a3a', perfBg:'#1a1a1a' },
+    pastel: { bg:'#fde8f0', ink:'#4a1a30', gold:'#d4709a', btnBg:'#d4709a', btnColor:'#fff0f5', noBorder:'#f0b8d0', noColor:'#c090a8', ticketHeaderBg:'#d4709a', ticketHeaderColor:'#fff0f5', detailBorder:'#d4709a', perfBorder:'#f0b8d0', perfBg:'#fde8f0' },
+  };
 
-    // Populate invite view
-    document.getElementById('greetingText').textContent = `Dear ${to},`;
-    document.getElementById('titleText').textContent = title;
+  const bgCSS = {
+    none:     { image:'', size:'' },
+    grain:    { image:`url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")`, size:'' },
+    lines:    { image:`repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(0,0,0,0.04) 28px,rgba(0,0,0,0.04) 29px)`, size:'' },
+    dots:     { image:`radial-gradient(circle,rgba(0,0,0,0.08) 1px,transparent 1px)`, size:'20px 20px' },
+    diagonal: { image:`repeating-linear-gradient(45deg,transparent,transparent 18px,rgba(0,0,0,0.04) 18px,rgba(0,0,0,0.04) 19px)`, size:'' },
+    mesh:     { image:`radial-gradient(ellipse at 20% 20%,rgba(0,0,0,0.05) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(0,0,0,0.05) 0%,transparent 50%)`, size:'' },
+  };
 
-    if (tagline) {
-      const lines = tagline.split('\n').filter(Boolean);
-      if (lines.length > 0) {
-        document.getElementById('taglineText').innerHTML =
-          lines.map(l => `<span>${l}</span>`).join('');
+  const langText = {
+    en:    { eyebrow:'✦ A Formal Invitation ✦', letWatch:"Let's watch", dear:'Dear', when:'When', where:'Where', noTitle:'Noted.\nVery convincing.', noSub:'"Busy." Sure.\nWe both know you\'ll be on your phone anyway.', undo:'Fine. I\'ll come.', expTitle:'Too late.', expSub:'This invitation has expired.\nMaybe next time.', snarkLabel:'a note from the organiser', snarkDefault:'Oh no. They said yes.\nNow I actually have to show up.', seat:'The Couch' },
+    zh:    { eyebrow:'✦ 正式邀请函 ✦', letWatch:'一起看', dear:'亲爱的', when:'时间', where:'地点', noTitle:'好吧。\n很有说服力。', noSub:'"很忙。"对吧。\n反正你也是在刷手机。', undo:'好啦，我去。', expTitle:'太晚了。', expSub:'邀请已过期。\n下次吧。', snarkLabel:'来自组织者的一句话', snarkDefault:'完了。他们说要来。\n现在我真的得出现了。', seat:'沙发' },
+    mixed: { eyebrow:'✦ A Formal Invitation ✦', letWatch:"Let's watch", dear:'Dear', when:'When 时间', where:'Where 地点', noTitle:'Noted.\n很有说服力。', noSub:'"Busy." 对吧。\nWe both know you\'ll be on your phone anyway.', undo:'Fine. 我去。', expTitle:'Too late.', expSub:'邀请已过期。Maybe next time.', snarkLabel:'a note from the organiser', snarkDefault:'Oh no. 他们说要来。\nNow I actually have to show up.', seat:'沙发 / The Couch' },
+  };
+
+  const p = new URLSearchParams(window.location.search);
+  const to       = p.get('to') || 'Friend';
+  const title    = p.get('title') || 'something';
+  const emoji    = p.get('emoji') || '🎬';
+  const tagline  = p.get('tagline') || '';
+  const time     = p.get('time') || '';
+  const platform = p.get('platform') || '';
+  const from     = p.get('from') || '';
+  const btnYesP  = p.get('btnYes') || '';
+  const btnNoP   = p.get('btnNo') || '';
+  const snarkP   = p.get('snark') || '';
+  const themeId  = p.get('theme') || 'dark';
+  const bgId     = p.get('bg') || 'none';
+  const lang     = p.get('lang') || 'en';
+  const expiry   = p.get('expiry') || '';
+
+  const hasCustomBg = p.get('hasCustomBg') === '1';
+  const bgImgSize   = p.get('bgImgSize') || 'cover';
+
+  const t  = themes[themeId] || themes.dark;
+  const bd = bgCSS[bgId] || bgCSS.none;
+  const lt = langText[lang] || langText.en;
+
+  // Apply theme to body
+  document.body.style.background = t.bg;
+  document.body.style.color = t.ink;
+
+  // Custom bg image (from sessionStorage, same device only)
+  if (hasCustomBg) {
+    try {
+      const imgData = sessionStorage.getItem('customBgImg');
+      if (imgData) {
+        document.body.style.backgroundImage = `url("${imgData}")`;
+        document.body.style.backgroundSize = bgImgSize === 'repeat' ? 'auto' : bgImgSize;
+        document.body.style.backgroundRepeat = bgImgSize === 'repeat' ? 'repeat' : 'no-repeat';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundAttachment = 'fixed';
       }
+    } catch(e) {}
+  } else if (bd.image) {
+    document.body.style.backgroundImage = bd.image;
+    if (bd.size) document.body.style.backgroundSize = bd.size;
+  }
+
+  // Corners
+  ['cTL','cTR','cBL','cBR'].forEach(id => { document.getElementById(id).style.borderColor = t.gold; });
+
+  // Check expiry
+  if (expiry && new Date() > new Date(expiry)) {
+    document.getElementById('expiredView').style.display = 'block';
+    document.getElementById('expTitle').textContent = lt.expTitle;
+    document.getElementById('expSub').innerHTML = lt.expSub.replace('\n','<br/>');
+    document.getElementById('expiredView').style.color = t.ink;
+  } else {
+    const iv = document.getElementById('inviteView');
+    iv.style.display = 'block';
+
+    document.getElementById('bigEmoji').textContent = emoji;
+    document.getElementById('eyebrow').textContent = lt.eyebrow;
+    document.getElementById('eyebrow').style.color = t.gold;
+    document.getElementById('greetingText').textContent = `${lt.dear} ${to},`;
+    document.getElementById('letWatch').textContent = lt.letWatch;
+    document.getElementById('titleText').textContent = title;
+    document.getElementById('titleText').style.color = t.gold;
+
+    // Tagline
+    const tEl = document.getElementById('taglineText');
+    if (tagline) {
+      tEl.innerHTML = tagline.split('\n').filter(Boolean).map(l => `<span>${l}</span>`).join('');
+    } else {
+      tEl.innerHTML = '<span>Two idiots.</span><span>One movie.</span><span>Zero planning skills.</span>';
     }
 
+    // Meta
     const metaRow = document.getElementById('metaRow');
-    if (time) {
-      metaRow.innerHTML += `<div class="meta-item"><div class="meta-label">When</div><div class="meta-value">${time}</div></div>`;
-    }
-    if (platform) {
-      metaRow.innerHTML += `<div class="meta-item"><div class="meta-label">Where</div><div class="meta-value">${platform}</div></div>`;
-    }
+    if (time) metaRow.innerHTML += `<div class="meta-item"><div class="meta-label" style="color:${t.gold}">${lt.when}</div><div class="meta-value">${time}</div></div>`;
+    if (platform) metaRow.innerHTML += `<div class="meta-item"><div class="meta-label" style="color:${t.gold}">${lt.where}</div><div class="meta-value">${platform}</div></div>`;
 
-    if (from) {
-      document.getElementById('fromLine').textContent = `— ${from}`;
-    }
+    // Buttons
+    const yBtn = document.getElementById('btnYes');
+    yBtn.textContent = btnYesP || (lang === 'zh' ? '★ 一起看！' : lang === 'mixed' ? '★ Watch Together 一起看' : '★ Watch Together');
+    yBtn.style.background = t.btnBg; yBtn.style.color = t.btnColor;
 
-    // Populate ticket
+    const nBtn = document.getElementById('btnNo');
+    nBtn.textContent = btnNoP || (lang === 'zh' ? '假装很忙' : lang === 'mixed' ? '假装很忙 / Too Busy' : 'Pretend To Be Busy');
+    nBtn.style.border = `1px solid ${t.noBorder}`; nBtn.style.color = t.noColor;
+
+    if (from) document.getElementById('fromLine').textContent = `— ${from}`;
+
+    // Ticket
     document.getElementById('ticketTitle').textContent = title;
+    document.getElementById('ticketTitle').style.color = t.gold;
+    const th = document.getElementById('ticketHeader');
+    th.style.background = t.ticketHeaderBg; th.style.color = t.ticketHeaderColor;
+    const tc = document.getElementById('ticket');
+    tc.style.borderColor = t.noBorder; tc.style.background = t.bg; tc.style.color = t.ink;
+
+    const perf = document.getElementById('perf');
+    perf.style.background = t.noBorder;
+
+    const style = document.createElement('style');
+    style.textContent = `.perf::before,.perf::after{background:${t.bg};border-color:${t.noBorder}}.ticket-detail{border-left-color:${t.gold}}`;
+    document.head.appendChild(style);
+
     const td = document.getElementById('ticketDetails');
     td.innerHTML = `
-      <div class="ticket-detail">
-        <div class="td-label">Guest</div>
-        <div class="td-value">${to}</div>
-      </div>
-      <div class="ticket-detail">
-        <div class="td-label">Host</div>
-        <div class="td-value">${from || '???'}</div>
-      </div>
-      ${time ? `<div class="ticket-detail"><div class="td-label">Date & Time</div><div class="td-value">${time}</div></div>` : ''}
-      ${platform ? `<div class="ticket-detail"><div class="td-label">Venue</div><div class="td-value">${platform}</div></div>` : ''}
+      <div class="ticket-detail"><div class="td-label">${lang === 'zh' ? '宾客' : 'Guest'}</div><div class="td-value">${to}</div></div>
+      <div class="ticket-detail"><div class="td-label">${lang === 'zh' ? '主持人' : 'Host'}</div><div class="td-value">${from || '???'}</div></div>
+      ${time ? `<div class="ticket-detail"><div class="td-label">${lt.when}</div><div class="td-value">${time}</div></div>` : ''}
+      ${platform ? `<div class="ticket-detail"><div class="td-label">${lt.where}</div><div class="td-value">${platform}</div></div>` : ''}
     `;
 
-    function sayYes() {
-      document.getElementById('inviteView').style.display = 'none';
-      document.getElementById('ticketView').classList.add('visible');
-    }
+    const stub = document.getElementById('ticketStub');
+    stub.querySelector('.seat-info strong').textContent = lang === 'zh' ? '你的座位' : 'YOUR SEAT';
+    stub.querySelector('.seat-info').childNodes[1] && (stub.querySelector('.seat-info').childNodes[1].textContent = lt.seat);
 
-    function sayNo() {
-      document.getElementById('inviteView').style.display = 'none';
-      document.getElementById('noView').classList.add('visible');
-    }
+    // Snark note
+    const sn = document.getElementById('snarkNote');
+    sn.style.color = t.noColor;
+    sn.querySelector('strong').textContent = lt.snarkLabel;
+    const snarkLines = snarkP ? snarkP.split('\n') : lt.snarkDefault.split('\n');
+    sn.innerHTML = `<strong>${lt.snarkLabel}</strong>${snarkLines.join('<br/>')}`;
 
-    function undoNo() {
-      document.getElementById('noView').classList.remove('visible');
-      document.getElementById('noView').style.display = 'none';
-      document.getElementById('inviteView').style.display = 'block';
-    }
-  </script>
+    // No view
+    document.getElementById('noTitle').innerHTML = lt.noTitle.replace('\n','<br/>');
+    const noSubLines = lt.noSub.split('\n');
+    document.getElementById('noSub').innerHTML = `${noSubLines[0]}<br/><em>${noSubLines[1] || ''}</em>`;
+    const undoBtn = document.getElementById('undoBtn');
+    undoBtn.textContent = lt.undo;
+    undoBtn.style.border = `1px solid ${t.noBorder}`; undoBtn.style.color = t.noColor;
+    undoBtn.onmouseover = () => { undoBtn.style.color = t.ink; undoBtn.style.borderColor = t.ink; };
+    undoBtn.onmouseout = () => { undoBtn.style.color = t.noColor; undoBtn.style.borderColor = t.noBorder; };
+  }
+
+  function sayYes() {
+    document.getElementById('inviteView').style.display = 'none';
+    document.getElementById('ticketView').classList.add('visible');
+  }
+
+  function sayNo() {
+    document.getElementById('inviteView').style.display = 'none';
+    document.getElementById('noView').classList.add('visible');
+  }
+
+  function undoNo() {
+    document.getElementById('noView').classList.remove('visible');
+    document.getElementById('inviteView').style.display = 'block';
+  }
+</script>
 </body>
 </html>
